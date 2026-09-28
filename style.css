@@ -6,8 +6,8 @@
     margin:auto;
     text-align: center;
     padding: 10px 0;
-    height: 410px;
-    width:350px;
+    max-height: 500px;
+    max-width:350px;
     background: gray;
     display: flex;
     flex-direction: column;
