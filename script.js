@@ -1,20 +1,82 @@
-let string = "";
-let buttons = document.querySelectorAll(".button");
-Array.from(buttons).forEach((button) => {
-  button.addEventListener("click", (e) => {
-    if (e.target.innerHTML == "=") {
-      string = eval(string);
-      document.querySelector("input").value = string;
-    } else if (e.target.innerHTML == "C") {
-      string = "";
-      document.querySelector("input").value = string;
-    } else if (e.target.innerHTML == "X") {
-      string = string.slice(0, -1);
-      document.querySelector("input").value = string;
-    } else {
-      console.log(e.target);
-      string = string + e.target.innerHTML;
-      document.querySelector("input").value = string;
+let currentNumber = "";
+let previousNumber = "";
+let operation = null;
+
+const input = document.querySelector(".input");
+const buttons = document.querySelectorAll(".button");
+
+buttons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const value = button.innerHTML;
+
+    if (!isNaN(value)) {
+      currentNumber += value;
     }
+
+    else if (value === ".") {
+      if (!currentNumber.includes(".")) {
+        currentNumber += currentNumber ? "." : "0.";
+      }
+    }
+
+    else if (["+", "-", "*", "/"].includes(value)) {
+      if (currentNumber === "") return;
+
+      if (previousNumber !== "") {
+        calculate();
+      }
+
+      previousNumber = currentNumber;
+      currentNumber = "";
+      operation = value;
+    }
+
+    else if (value === "C") {
+      currentNumber = "";
+      previousNumber = "";
+      operation = null;
+    }
+
+    else if (value === "X") {
+      currentNumber = currentNumber.slice(0, -1);
+    }
+
+    else if (value === "%") {
+      if (currentNumber !== "") {
+        currentNumber = String(Number(currentNumber) / 100);
+      }
+    }
+
+    else if (value === "=") {
+      calculate();
+    }
+
+    input.value = currentNumber || "0";
   });
 });
+
+function calculate() {
+  if (previousNumber === "" || currentNumber === "" || operation === null) {
+    return;
+  }
+
+  const firstNumber = Number(previousNumber);
+  const secondNumber = Number(currentNumber);
+
+  if (operation === "+") {
+    currentNumber = String(firstNumber + secondNumber);
+  } else if (operation === "-") {
+    currentNumber = String(firstNumber - secondNumber);
+  } else if (operation === "*") {
+    currentNumber = String(firstNumber * secondNumber);
+  } else if (operation === "/") {
+    if (secondNumber === 0) {
+      currentNumber = "Error";
+    } else {
+      currentNumber = String(firstNumber / secondNumber);
+    }
+  }
+
+  previousNumber = "";
+  operation = null;
+}
